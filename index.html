@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Norway Cup 2026 Planlegger</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { margin-top: 40px; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        input, select, button { margin: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Norway Cup 2026 Planlegger</h1>
+
+    <h2>Spillerliste</h2>
+    <input type="text" id="newPlayer" placeholder="Spillernavn">
+    <button onclick="addPlayer()">Legg til spiller</button>
+    <ul id="playerList"></ul>
+
+    <h2>Trenerliste</h2>
+    <input type="text" id="newCoach" placeholder="Trenernavn">
+    <button onclick="addCoach()">Legg til trener</button>
+    <ul id="coachList"></ul>
+
+    <h2>Hotellkalkulator</h2>
+    <table id="hotelTable">
+        <tr><th>Romtype</th><th>Antall rom</th><th>Pris per natt</th><th>Netter</th><th>Total</th><th></th></tr>
+        <tr>
+            <td>Trippelrom</td>
+            <td><input type="number" value="8" onchange="updateHotel()"></td>
+            <td><input type="number" value="1500" onchange="updateHotel()"></td>
+            <td><input type="number" value="7" onchange="updateHotel()"></td>
+            <td class="total">0</td>
+            <td><button onclick="deleteRow(this)">Fjern</button></td>
+        </tr>
+        <tr>
+            <td>Dobbeltrom</td>
+            <td><input type="number" value="2" onchange="updateHotel()"></td>
+            <td><input type="number" value="1200" onchange="updateHotel()"></td>
+            <td><input type="number" value="7" onchange="updateHotel()"></td>
+            <td class="total">0</td>
+            <td><button onclick="deleteRow(this)">Fjern</button></td>
+        </tr>
+    </table>
+    <button onclick="addHotelRow()">Legg til romtype</button>
+
+    <h2>Utgifter</h2>
+    <table id="expenseTable">
+        <tr><th>Type</th><th>Beløp</th><th></th></tr>
+        <tr><td>Transport</td><td><input type="number" value="20000" onchange="updateSummary()"></td><td><button onclick="deleteRow(this)">Fjern</button></td></tr>
+        <tr><td>Utstyr</td><td><input type="number" value="10000" onchange="updateSummary()"></td><td><button onclick="deleteRow(this)">Fjern</button></td></tr>
+        <tr><td>Diverse</td><td><input type="number" value="5000" onchange="updateSummary()"></td><td><button onclick="deleteRow(this)">Fjern</button></td></tr>
+    </table>
+    <button onclick="addExpenseRow()">Legg til utgift</button>
+
+    <h2>Inntekter</h2>
+    <table id="incomeTable">
+        <tr><th>Type</th><th>Beløp</th><th></th></tr>
+        <tr><td>Sponsorer</td><td><input type="number" value="15000" onchange="updateSummary()"></td><td><button onclick="deleteRow(this)">Fjern</button></td></tr>
+        <tr><td>Dugnad</td><td><input type="number" value="10000" onchange="updateSummary()"></td><td><button onclick="deleteRow(this)">Fjern</button></td></tr>
+    </table>
+    <button onclick="addIncomeRow()">Legg til inntekt</button>
+
+    <h2>Oppsummering</h2>
+    <p id="summary"></p>
+
+    <h2>Romfordeling Spillere</h2>
+    <div id="playerRooms"></div>
+    <button onclick="addPlayerRoom()">Legg til spillerrom</button>
+
+    <h2>Romfordeling Trenere</h2>
+    <div id="coachRooms"></div>
+    <button onclick="addCoachRoom()">Legg til trenerrom</button>
+
+    <h2>Eksport og lagring</h2>
+    <button onclick="exportToExcel()">Eksporter til Excel</button>
+    <button onclick="saveData()">Lagre oppsett</button>
+    <button onclick="loadData()">Hent oppsett</button>
+
+    <script>
+        function addPlayer() {
+            const name = document.getElementById("newPlayer").value;
+            if (name) {
+                const li = document.createElement("li");
+                li.textContent = name;
+                const btn = document.createElement("button");
+                btn.textContent = "Fjern";
+                btn.onclick = () => li.remove();
+                li.appendChild(btn);
+                document.getElementById("playerList").appendChild(li);
+                document.getElementById("newPlayer").value = "";
+            }
+        }
+
+        function addCoach() {
+            const name = document.getElementById("newCoach").value;
+            if (name) {
+                const li = document.createElement("li");
+                li.textContent = name;
+                const btn = document.createElement("button");
+                btn.textContent = "Fjern";
+                btn.onclick = () => li.remove();
+                li.appendChild(btn);
+                document.getElementById("coachList").appendChild(li);
+                document.getElementById("newCoach").value = "";
+            }
+        }
+
+        function deleteRow(btn) {
+            btn.parentElement.parentElement.remove();
+            updateHotel();
+            updateSummary();
+        }
+
+        function addHotelRow() {
+            const row = document.createElement("tr");
+            row.innerHTML = '<td><input></td><td><input type="number" value="1" onchange="updateHotel()"></td><td><input type="number" value="1000" onchange="updateHotel()"></td><td><input type="number" value="1" onchange="updateHotel()"></td><td class="total">0</td><td><button onclick="deleteRow(this)">Fjern</button></td>';
+            document.getElementById("hotelTable").appendChild(row);
+        }
+
+        function addExpenseRow() {
+            const row = document.createElement("tr");
+            row.innerHTML = '<td><input></td><td><input type="number" value="0" onchange="updateSummary()"></td><td><button onclick="deleteRow(this)">Fjern</button></td>';
+            document.getElementById("expenseTable").appendChild(row);
+        }
+
+        function addIncomeRow() {
+            const row = document.createElement("tr");
+            row.innerHTML = '<td><input></td><td><input type="number" value="0" onchange="updateSummary()"></td><td><button onclick="deleteRow(this)">Fjern</button></td>';
+            document.getElementById("incomeTable").appendChild(row);
+        }
+
+        function updateHotel() {
+            let total = 0;
+            document.querySelectorAll("#hotelTable tr").forEach((row, i) => {
+                if (i === 0) return;
+                const cells = row.querySelectorAll("td");
+                const count = parseFloat(cells[1].querySelector("input").value);
+                const price = parseFloat(cells[2].querySelector("input").value);
+                const nights = parseFloat(cells[3].querySelector("input").value);
+                const sum = count * price * nights;
+                cells[4].textContent = sum.toFixed(2);
+                total += sum;
+            });
+            updateSummary();
+        }
+
+        function updateSummary() {
+            let expenses = 0;
+            document.querySelectorAll("#expenseTable tr").forEach((row, i) => {
+                if (i === 0) return;
+                expenses += parseFloat(row.querySelectorAll("td")[1].querySelector("input").value);
+            });
+            document.querySelectorAll("#hotelTable tr").forEach((row, i) => {
+                if (i === 0) return;
+                expenses += parseFloat(row.querySelectorAll("td")[4].textContent);
+            });
+            let income = 0;
+            document.querySelectorAll("#incomeTable tr").forEach((row, i) => {
+                if (i === 0) return;
+                income += parseFloat(row.querySelectorAll("td")[1].querySelector("input").value);
+            });
+            const net = expenses - income;
+            const players = document.querySelectorAll("#playerList li").length;
+            const coaches = document.querySelectorAll("#coachList li").length;
+            const totalPeople = players + coaches;
+            const perPerson = totalPeople ? (net / totalPeople).toFixed(2) : 0;
+            const perPlayer = players ? (net / players).toFixed(2) : 0;
+            document.getElementById("summary").innerHTML = `
+                Totale utgifter: ${expenses.toFixed(2)} NOK<br>
+                Totale inntekter: ${income.toFixed(2)} NOK<br>
+                Netto kostnad: ${net.toFixed(2)} NOK<br>
+                Kostnad per person (spillere + trenere): ${perPerson} NOK<br>
+                Kostnad per spiller (kun spillere betaler): ${perPlayer} NOK
+            `;
+        }
+
+        function addPlayerRoom() {
+            const div = document.createElement("div");
+            div.innerHTML = '<select></select><select></select><select></select><button onclick="this.parentElement.remove()">Fjern rom</button>';
+            const selects = div.querySelectorAll("select");
+            const players = Array.from(document.querySelectorAll("#playerList li")).map(li => li.firstChild.textContent);
+            selects.forEach(sel => {
+                players.forEach(name => {
+                    const opt = document.createElement("option");
+                    opt.textContent = name;
+                    sel.appendChild(opt);
+                });
+            });
+            document.getElementById("playerRooms").appendChild(div);
+        }
+
+        function addCoachRoom() {
+            const div = document.createElement("div");
+            div.innerHTML = '<select></select><select></select><button onclick="this.parentElement.remove()">Fjern rom</button>';
+            const selects = div.querySelectorAll("select");
+            const coaches = Array.from(document.querySelectorAll("#coachList li")).map(li => li.firstChild.textContent);
+            selects.forEach(sel => {
+                coaches.forEach(name => {
+                    const opt = document.createElement("option");
+                    opt.textContent = name;
+                    sel.appendChild(opt);
+                });
+            });
+            document.getElementById("coachRooms").appendChild(div);
+        }
+
+        function saveData() {
+            localStorage.setItem("norwayCupData", document.body.innerHTML);
+            alert("Oppsett lagret!");
+        }
+
+        function loadData() {
+            const data = localStorage.getItem("norwayCupData");
+            if (data) {
+                document.body.innerHTML = data;
+                alert("Oppsett hentet!");
+            }
+        }
+
+        function exportToExcel() {
+            alert("Excel-eksport krever ekstern løsning. Du kan kopiere tabeller til Excel manuelt.");
+        }
+
+        updateHotel();
+        updateSummary();
+    </script>
+</body>
+</html>
